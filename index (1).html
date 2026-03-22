@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thinktank AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand: #6C5CE7;
+      --brand-light: #a29bfe;
+      --brand-dark: #4834d4;
+      --bg: #0D0D0F;
+      --surface: #16161A;
+      --surface2: #1E1E24;
+      --border: rgba(255,255,255,0.08);
+      --text: #F0EFF4;
+      --muted: #888796;
+      --success: #00b894;
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Background grid */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(108,92,231,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(108,92,231,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Glow blob */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -200px;
+      right: -200px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(108,92,231,0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    /* HEADER */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 3rem;
+      animation: fadeDown 0.6s ease both;
+    }
+
+    .logo-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-light));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .logo-icon svg { width: 22px; height: 22px; }
+
+    .logo-text h1 {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .logo-text p {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .badge {
+      margin-left: auto;
+      background: rgba(108,92,231,0.15);
+      border: 1px solid rgba(108,92,231,0.3);
+      color: var(--brand-light);
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* TABS */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 1.5rem;
+      background: var(--surface);
+      border-radius: 14px;
+      padding: 5px;
+      border: 1px solid var(--border);
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 6px;
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      font-weight: 500;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background: transparent;
+      color: var(--muted);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .tab-btn.active {
+      background: var(--brand);
+      color: #fff;
+    }
+
+    .tab-btn:not(.active):hover {
+      color: var(--text);
+      background: var(--surface2);
+    }
+
+    /* PANELS */
+    .panel { display: none; animation: fadeUp 0.3s ease both; }
+    .panel.active { display: block; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    textarea {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      line-height: 1.6;
+      padding: 12px 14px;
+      resize: vertical;
+      min-height: 90px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus { border-color: rgba(108,92,231,0.5); }
+    textarea::placeholder { color: var(--muted); }
+
+    .btn-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .btn-primary {
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 22px;
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary:hover { background: var(--brand-dark); }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-clear {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: all 0.2s;
+    }
+    .btn-clear:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+    /* ANSWER BOX */
+    .answer-box {
+      display: none;
+      background: var(--surface2);
+      border: 1px solid rgba(108,92,231,0.25);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .answer-box::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(to bottom, var(--brand), var(--brand-light));
+    }
+
+    .answer-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--brand-light);
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .answer-text {
+      font-size: 0.95rem;
+      line-height: 1.75;
+      color: var(--text);
+      white-space: pre-wrap;
+    }
+
+    /* LOADING SPINNER */
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    /* STATS */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 2.5rem;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--brand-light);
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* ERROR */
+    .error-box {
+      display: none;
+      background: rgba(214,48,49,0.1);
+      border: 1px solid rgba(214,48,49,0.3);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: #ff7675;
+      font-size: 0.85rem;
+      margin-top: 10px;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 480px) {
+      .tab-btn span.tab-label { display: none; }
+      header .badge { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5"/>
+        <path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <div class="logo-text">
+      <h1>Thinktank AI</h1>
+      <p>Your personal AI study assistant</p>
+    </div>
+    <div class="badge">AI Powered</div>
+  </header>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('doubt', this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span class="tab-label">Ask a Doubt</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('summary', this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span class="tab-label">Summarize Notes</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('quiz', this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span class="tab-label">Generate Questions</span>
+    </button>
+  </div>
+
+  <!-- PANEL: Ask a Doubt -->
+  <div class="panel active" id="panel-doubt">
+    <div class="card">
+      <div class="card-label">Your Question</div>
+      <textarea id="doubt-input" placeholder="e.g. What is Newton's second law of motion? Explain with an example."></textarea>
+      <div class="btn-row">
+        <button class="btn-primary" id="doubt-btn" onclick="callBackend('doubt')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          Get Answer
+        </button>
+        <button class="btn-clear" onclick="clearPanel('doubt')">Clear</button>
+      </div>
+      <div class="error-box" id="doubt-error"></div>
+    </div>
+    <div class="answer-box" id="doubt-answer">
+      <div class="answer-label">AI Answer</div>
+      <div class="answer-text" id="doubt-answer-text"></div>
+    </div>
+  </div>
+
+  <!-- PANEL: Summarize -->
+  <div class="panel" id="panel-summary">
+    <div class="card">
+      <div class="card-label">Paste Your Notes</div>
+      <textarea id="summary-input" placeholder="Paste your long notes or textbook content here. AI will give you a short, clear summary..." style="min-height: 130px;"></textarea>
+      <div class="btn-row">
+        <button class="btn-primary" id="summary-btn" onclick="callBackend('summary')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="16" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          Summarize
+        </button>
+        <button class="btn-clear" onclick="clearPanel('summary')">Clear</button>
+      </div>
+      <div class="error-box" id="summary-error"></div>
+    </div>
+    <div class="answer-box" id="summary-answer">
+      <div class="answer-label">Summary</div>
+      <div class="answer-text" id="summary-answer-text"></div>
+    </div>
+  </div>
+
+  <!-- PANEL: Quiz -->
+  <div class="panel" id="panel-quiz">
+    <div class="card">
+      <div class="card-label">Topic or Text</div>
+      <textarea id="quiz-input" placeholder="Enter a topic name or paste a paragraph. e.g. Photosynthesis, French Revolution, Ohm's Law..."></textarea>
+      <div class="btn-row">
+        <button class="btn-primary" id="quiz-btn" onclick="callBackend('quiz')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Generate Questions
+        </button>
+        <button class="btn-clear" onclick="clearPanel('quiz')">Clear</button>
+      </div>
+      <div class="error-box" id="quiz-error"></div>
+    </div>
+    <div class="answer-box" id="quiz-answer">
+      <div class="answer-label">Practice Questions</div>
+      <div class="answer-text" id="quiz-answer-text"></div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-num">3</div>
+      <div class="stat-label">AI Features</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Free to Use</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">24/7</div>
+      <div class="stat-label">Available</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ─── TAB SWITCHING ───────────────────────────────────────────────
+  function switchTab(name, btn) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // ─── CLEAR PANEL ────────────────────────────────────────────────
+  function clearPanel(name) {
+    document.getElementById(name + '-input').value = '';
+    document.getElementById(name + '-answer').style.display = 'none';
+    document.getElementById(name + '-error').style.display = 'none';
+  }
+
+  // ─── BACKEND CALL ────────────────────────────────────────────────
+  // NOTE FOR BACKEND DEV:
+  // Replace the API_URL below with your Flask server URL
+  // Expected: POST /api/ask  { type: "doubt"|"summary"|"quiz", text: "..." }
+  // Response: { result: "..." }
+
+  const API_URL = 'http://localhost:5000/api/ask'; // <-- Backend wala yahan apna URL daale
+
+  async function callBackend(type) {
+    const input = document.getElementById(type + '-input').value.trim();
+    const btn = document.getElementById(type + '-btn');
+    const answerBox = document.getElementById(type + '-answer');
+    const answerText = document.getElementById(type + '-answer-text');
+    const errorBox = document.getElementById(type + '-error');
+
+    // Validation
+    if (!input) {
+      showError(errorBox, 'Please enter some text first!');
+      return;
+    }
+
+    // Loading state
+    errorBox.style.display = 'none';
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div> Thinking...';
+    answerBox.style.display = 'none';
+
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type, text: input })
+      });
+
+      if (!res.ok) throw new Error('Server error: ' + res.status);
+
+      const data = await res.json();
+      answerText.textContent = data.result;
+      answerBox.style.display = 'block';
+
+    } catch (err) {
+      showError(errorBox, 'Could not connect to backend. Make sure Flask server is running!');
+      console.error(err);
+    } finally {
+      btn.disabled = false;
+      const labels = {
+        doubt: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Get Answer',
+        summary: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="16" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> Summarize',
+        quiz: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Generate Questions'
+      };
+      btn.innerHTML = labels[type];
+    }
+  }
+
+  function showError(el, msg) {
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+</script>
+</body>
+</html>
